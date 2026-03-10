@@ -1,0 +1,8 @@
+# Downloaded property photos (per-property, not part of the tool)
+*.jpg
+*.jpeg
+*.png
+*.webp
+
+# Property directories contain photos + generated viewers
+# Only the template viewer and runbook are tracked

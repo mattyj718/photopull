@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title id="page-title">Property Photos</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #1a1a1a; color: #eee; font-family: system-ui, sans-serif; }
+  header { padding: 1.5rem 2rem; background: #111; border-bottom: 1px solid #333; }
+  header h1 { font-size: 1.4rem; font-weight: 600; }
+  header p { color: #888; font-size: 0.9rem; margin-top: 0.3rem; }
+  .grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    gap: 4px; padding: 4px;
+  }
+  .grid img {
+    width: 100%; height: 300px; object-fit: cover; display: block;
+    cursor: pointer; transition: opacity 0.15s;
+  }
+  .grid img:hover { opacity: 0.85; }
+  .lightbox {
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95);
+    z-index: 100; align-items: center; justify-content: center; flex-direction: column;
+  }
+  .lightbox.active { display: flex; }
+  .lightbox img { max-width: 95vw; max-height: 85vh; object-fit: contain; }
+  .lightbox .nav {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    background: rgba(255,255,255,0.15); border: none; color: #fff;
+    font-size: 2rem; padding: 0.8rem 1rem; cursor: pointer; border-radius: 4px;
+  }
+  .lightbox .nav:hover { background: rgba(255,255,255,0.3); }
+  .lightbox .prev { left: 1rem; }
+  .lightbox .next { right: 1rem; }
+  .lightbox .close {
+    position: absolute; top: 1rem; right: 1.5rem;
+    background: none; border: none; color: #fff; font-size: 2rem; cursor: pointer;
+  }
+  .lightbox .counter { margin-top: 1rem; color: #aaa; font-size: 0.9rem; }
+</style>
+</head>
+<body>
+<header>
+  <h1 id="heading">Property Photos</h1>
+  <p id="subtitle"></p>
+</header>
+<div class="grid" id="grid"></div>
+<div class="lightbox" id="lightbox">
+  <button class="close" onclick="closeLightbox()">&times;</button>
+  <button class="nav prev" onclick="navigate(-1)">&#8249;</button>
+  <img id="lb-img" src="" alt="">
+  <button class="nav next" onclick="navigate(1)">&#8250;</button>
+  <div class="counter" id="counter"></div>
+</div>
+<script>
+// ---- CONFIGURE THIS SECTION PER PROPERTY ----
+const CONFIG = {
+  address: "408 Washington Ave, Montclair, NJ 07042",
+  details: "3 bed / 1.5 bath brick Tudor ranch",
+  source: "Zumper",
+  photos: [
+    "photo_249107344.jpg","photo_249107345.jpg","photo_249107346.jpg",
+    "photo_249107347.jpg","photo_249107348.jpg","photo_249107349.jpg",
+    "photo_249107350.jpg","photo_249107351.jpg","photo_249107352.jpg",
+    "photo_249311024.jpg","photo_249311025.jpg","photo_249311026.jpg",
+    "photo_249311027.jpg","photo_249311028.jpg","photo_249311029.jpg",
+    "photo_249311030.jpg","photo_249311031.jpg","photo_249311032.jpg",
+    "photo_249311033.jpg","photo_249311034.jpg","photo_249311035.jpg",
+    "photo_249311036.jpg"
+  ]
+};
+// ---- END CONFIG ----
+
+document.getElementById("page-title").textContent = CONFIG.address;
+document.getElementById("heading").textContent = CONFIG.address;
+document.getElementById("subtitle").textContent =
+  `${CONFIG.photos.length} photos` +
+  (CONFIG.details ? ` \u2014 ${CONFIG.details}` : "") +
+  (CONFIG.source ? ` \u2014 sourced from ${CONFIG.source}` : "");
+
+const grid = document.getElementById("grid");
+const lightbox = document.getElementById("lightbox");
+const lbImg = document.getElementById("lb-img");
+const counterEl = document.getElementById("counter");
+let current = 0;
+
+CONFIG.photos.forEach((src, i) => {
+  const img = document.createElement("img");
+  img.src = src;
+  img.alt = `Photo ${i + 1}`;
+  img.loading = "lazy";
+  img.onclick = () => openLightbox(i);
+  grid.appendChild(img);
+});
+
+function openLightbox(i) {
+  current = i;
+  updateLightbox();
+  lightbox.classList.add("active");
+}
+function closeLightbox() { lightbox.classList.remove("active"); }
+function navigate(dir) {
+  current = (current + dir + CONFIG.photos.length) % CONFIG.photos.length;
+  updateLightbox();
+}
+function updateLightbox() {
+  lbImg.src = CONFIG.photos[current];
+  counterEl.textContent = `${current + 1} / ${CONFIG.photos.length}`;
+}
+document.addEventListener("keydown", e => {
+  if (!lightbox.classList.contains("active")) return;
+  if (e.key === "Escape") closeLightbox();
+  if (e.key === "ArrowLeft") navigate(-1);
+  if (e.key === "ArrowRight") navigate(1);
+});
+lightbox.addEventListener("click", e => { if (e.target === lightbox) closeLightbox(); });
+</script>
+</body>
+</html>

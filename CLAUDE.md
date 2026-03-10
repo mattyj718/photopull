@@ -1,4 +1,6 @@
-# Real Estate Photo Recovery Tool
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## On startup
 When the user starts a conversation in this directory, immediately ask:
@@ -6,6 +8,18 @@ When the user starts a conversation in this directory, immediately ask:
 > Paste a real estate listing URL (Zillow, Redfin, etc.) or a street address and I'll recover the listing photos.
 
 Then follow the runbook below automatically — no further prompting needed.
+
+## Project overview
+This is a Claude Code-driven tool (no traditional codebase) for recovering listing photos from real estate sites. The "code" is a runbook that Claude executes via WebSearch, WebFetch, curl, and a static HTML viewer template.
+
+### Key files
+- `viewer-template.html` — standalone HTML photo viewer with grid + lightbox; copy this into each property directory and update the `CONFIG` block
+- `playbook.md` — detailed reference on which sites work, CDN URL patterns, and site-specific notes
+- `408-washington-ave-montclair/` — example output directory (photos + customized viewer)
+- `.gitignore` — excludes downloaded images; only the template and runbook are tracked
+
+### Output structure
+Each property gets a directory at `~/dev/tmp/<address-slug>/` containing downloaded photos and a customized `viewer.html`.
 
 ## Runbook
 
@@ -49,7 +63,7 @@ file *.jpg *.png *.webp 2>/dev/null
 Delete any files that are HTML error pages or zero-byte.
 
 ### 7. Generate viewer
-Copy the viewer.html template from `~/dev/tmp/408-washington-ave-montclair/viewer.html` into the new directory. Update the `CONFIG` block with:
+Copy `viewer-template.html` from the repo root into the new directory as `viewer.html`. Update the `CONFIG` block with:
 - `address`: the full address
 - `details`: bed/bath/type if known from search results
 - `source`: which site the photos came from
